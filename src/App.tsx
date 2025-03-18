@@ -9,6 +9,7 @@ import Categories from "./pages/Categories";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import Analytics from "./pages/Analytics"; // Add import for Analytics page
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/analytics" element={<Analytics />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
