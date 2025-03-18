@@ -2,8 +2,17 @@
 // This file would contain the real Microsoft Graph API integration
 // For now, we're using mock data
 
-import { Email } from '@/types/email';
+import { Email, AIGeneratedResponse } from '@/types/email';
 import { generateMockEmails } from './mockData';
+
+// Store sent emails in memory (in a real app, this would be in a database)
+let sentEmails: Array<{
+  id: string;
+  to: string;
+  subject: string;
+  body: string;
+  sentAt: Date;
+}> = [];
 
 // Mock authentication function
 export const authenticateWithMicrosoft = async (): Promise<{ success: boolean, error?: string }> => {
@@ -38,5 +47,44 @@ export const markEmailAsRead = async (emailId: string): Promise<boolean> => {
     setTimeout(() => {
       resolve(true);
     }, 300);
+  });
+};
+
+// Mock function to send an email
+export const sendEmail = async (to: string, subject: string, body: string): Promise<boolean> => {
+  // In a real implementation, this would call Microsoft Graph API to send the email
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Generate a random ID for the sent email
+      const emailId = `sent-${Math.random().toString(36).substring(2, 10)}`;
+      
+      // Store the sent email in our memory array
+      sentEmails.push({
+        id: emailId,
+        to,
+        subject,
+        body,
+        sentAt: new Date(),
+      });
+      
+      console.log('Email sent:', { to, subject });
+      resolve(true);
+    }, 1500);
+  });
+};
+
+// Function to get sent emails
+export const getSentEmails = async (): Promise<Array<{
+  id: string;
+  to: string;
+  subject: string;
+  body: string;
+  sentAt: Date;
+}>> => {
+  // In a real implementation, this would retrieve sent emails from the server
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([...sentEmails].reverse()); // Return newest first
+    }, 500);
   });
 };

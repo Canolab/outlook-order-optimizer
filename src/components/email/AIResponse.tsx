@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { X, Check, Send } from 'lucide-react';
+import { sendEmail } from '@/utils/msGraph';
 
 interface AIResponseProps {
   aiResponse: AIGeneratedResponse | null;
@@ -55,14 +56,30 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
     setIsSending(true);
     
     try {
-      // In a real application, this would call an API to send the email
-      // Simulating network request
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Get the current subject and body (either edited or original)
+      const subject = isEditing ? editedSubject : aiResponse.subject;
+      const body = isEditing ? editedBody : aiResponse.body;
       
-      toast({
-        title: "Email sent",
-        description: "Your response has been sent successfully",
-      });
+      // Send email using our msGraph utility
+      const success = await sendEmail(
+        "customer@example.com", // In a real app, this would be the customer's email
+        subject,
+        body
+      );
+      
+      if (success) {
+        toast({
+          title: "Email sent",
+          description: "Your response has been sent successfully",
+        });
+        
+        // If we were editing, exit edit mode
+        if (isEditing) {
+          setIsEditing(false);
+        }
+      } else {
+        throw new Error("Failed to send email");
+      }
     } catch (error) {
       console.error('Error sending email:', error);
       toast({
@@ -133,6 +150,10 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
             <Button onClick={handleCancelEdits} variant="outline">
               <X className="mr-1 h-4 w-4" />
               Cancel
+            </Button>
+            <Button onClick={handleSendEmail} disabled={isSending} className="bg-green-600 hover:bg-green-700 ml-auto">
+              <Send className="mr-2 h-4 w-4" />
+              {isSending ? 'Sending...' : 'Send Email'}
             </Button>
           </div>
         ) : (

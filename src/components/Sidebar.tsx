@@ -5,10 +5,10 @@ import {
   Mail, 
   BarChart, 
   Settings, 
-  FolderOpen, 
-  Filter, 
   FileText,
-  HelpCircle
+  HelpCircle,
+  Filter,
+  Send
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -31,6 +31,16 @@ export const Sidebar: React.FC = () => {
         >
           <Mail className="h-5 w-5" />
           <span>Inbox</span>
+        </NavLink>
+        
+        <NavLink 
+          to="/sent-emails" 
+          className={({ isActive }) => 
+            isActive ? "sidebar-nav-item active" : "sidebar-nav-item"
+          }
+        >
+          <Send className="h-5 w-5" />
+          <span>Sent Emails</span>
         </NavLink>
         
         <NavLink 

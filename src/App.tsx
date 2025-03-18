@@ -9,7 +9,8 @@ import Categories from "./pages/Categories";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import Analytics from "./pages/Analytics"; // Add import for Analytics page
+import Analytics from "./pages/Analytics";
+import SentEmails from "./pages/SentEmails"; // Add import for SentEmails page
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/orders" element={<Orders />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/sent-emails" element={<SentEmails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
