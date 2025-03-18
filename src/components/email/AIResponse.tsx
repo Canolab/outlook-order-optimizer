@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { X, Check } from 'lucide-react';
+import { X, Check, Send } from 'lucide-react';
 
 interface AIResponseProps {
   aiResponse: AIGeneratedResponse | null;
@@ -17,6 +17,7 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
   const [isEditing, setIsEditing] = useState(false);
   const [editedSubject, setEditedSubject] = useState('');
   const [editedBody, setEditedBody] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   if (!aiResponse) return null;
   
@@ -48,6 +49,30 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
     toast({
       description: "Edit cancelled",
     });
+  };
+
+  const handleSendEmail = async () => {
+    setIsSending(true);
+    
+    try {
+      // In a real application, this would call an API to send the email
+      // Simulating network request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast({
+        title: "Email sent",
+        description: "Your response has been sent successfully",
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast({
+        title: "Failed to send email",
+        description: "There was an error sending your email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
   
   return (
@@ -112,6 +137,10 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
           </div>
         ) : (
           <div className="flex space-x-2">
+            <Button onClick={handleSendEmail} disabled={isSending} className="bg-green-600 hover:bg-green-700">
+              <Send className="mr-2 h-4 w-4" />
+              {isSending ? 'Sending...' : 'Send Email'}
+            </Button>
             <Button onClick={handleCopyResponse}>
               Copy Response
             </Button>
