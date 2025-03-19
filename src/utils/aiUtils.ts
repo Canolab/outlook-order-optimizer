@@ -19,8 +19,49 @@ export const generateResponseWithAI = async (
   // Simulate AI processing time
   return new Promise((resolve) => {
     setTimeout(() => {
-      // Return mock data for now
-      resolve(mockAIResponse);
+      // Generate a custom response that outlines the price differences
+      const customerName = orderDetails.customerName || "Valued Customer";
+      const orderNumber = orderDetails.orderNumber || "your recent order";
+      
+      // Calculate if there's a difference in price
+      const hasDifference = marginInfo.totalMargin !== 0;
+      const differenceType = marginInfo.totalMargin > 0 ? "higher" : "lower";
+      
+      // Create a response that outlines the differences
+      let response: AIGeneratedResponse = {
+        subject: `RE: ${emailSubject}`,
+        body: `Dear ${customerName},\n\nThank you for your order ${orderNumber}. We've reviewed your request and would like to provide you with some information regarding pricing.\n\n`,
+        recommendation: ''
+      };
+      
+      // Add price difference details to the body
+      if (hasDifference) {
+        response.body += `We noticed that there's a ${Math.abs(marginInfo.marginPercentage).toFixed(1)}% ${differenceType} than our current pricing for these items. Here's a breakdown:\n\n`;
+        
+        // Add item by item breakdown
+        orderDetails.items.forEach(item => {
+          if (item.margin && item.margin !== 0) {
+            const itemDifferenceType = item.margin > 0 ? "higher" : "lower";
+            response.body += `- ${item.description} (${item.productCode}): ${Math.abs((item.margin / item.totalPrice) * 100).toFixed(1)}% ${itemDifferenceType} than our current pricing\n`;
+          }
+        });
+        
+        // Add conclusion based on price difference
+        if (marginInfo.totalMargin > 0) {
+          response.body += `\nWe'd like to discuss these pricing differences with you. We believe we can offer more competitive pricing for these items. Would you be available for a quick call to discuss this further?\n\n`;
+          response.recommendation = 'Schedule a call to negotiate pricing - there may be an opportunity to offer a discount while maintaining profitability.';
+        } else {
+          response.body += `\nWe'd like to confirm these prices with you as they are below our current standard rates. There may have been recent changes in our pricing structure or special discounts that apply to your account.\n\n`;
+          response.recommendation = 'Review order with sales manager - prices are below standard rates which may affect profitability.';
+        }
+      } else {
+        response.body += `We confirm that the pricing in your order matches our current rates. We're processing your order and will update you on shipping details soon.\n\n`;
+        response.recommendation = 'Order is ready for processing with standard pricing.';
+      }
+      
+      response.body += `Please let me know if you have any questions or if there's anything else you need assistance with.\n\nBest regards,\nYour Account Manager`;
+      
+      resolve(response);
     }, 2500);
   });
 };

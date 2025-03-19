@@ -54,7 +54,7 @@ export const OrderDetailsDisplay: React.FC<OrderDetailsProps> = ({ orderDetails,
                     <th className="text-left p-2">Qty</th>
                     <th className="text-right p-2">Unit Price</th>
                     <th className="text-right p-2">Total</th>
-                    {priceComparison && <th className="text-right p-2">Margin</th>}
+                    {priceComparison && <th className="text-right p-2">Difference</th>}
                   </tr>
                 </thead>
                 <tbody>

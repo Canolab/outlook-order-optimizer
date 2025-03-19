@@ -21,7 +21,7 @@ export const comparePricesWithERP = async (orderItems: OrderItem[]): Promise<Ord
   // In a real implementation, this would query your K8 ERP system
   return new Promise((resolve) => {
     setTimeout(() => {
-      const itemsWithMargin = orderItems.map(item => {
+      const itemsWithDifference = orderItems.map(item => {
         const internalItem = mockInternalPriceList[item.productCode as keyof typeof mockInternalPriceList];
         const internalPrice = internalItem ? internalItem.internalPrice : item.unitPrice * 0.8; // Fallback
         const margin = item.unitPrice - internalPrice;
@@ -29,11 +29,11 @@ export const comparePricesWithERP = async (orderItems: OrderItem[]): Promise<Ord
         return {
           ...item,
           internalPrice,
-          margin
+          margin // We keep the property name as margin but we'll display it as "difference"
         };
       });
       
-      resolve(itemsWithMargin);
+      resolve(itemsWithDifference);
     }, 1000);
   });
 };
