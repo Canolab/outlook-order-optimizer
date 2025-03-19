@@ -89,9 +89,9 @@ export const generateResponseWithAI = async (
       
       Line Items with Their Price Differences:
       ${orderDetails.items.map(item => {
-        const difference = item.difference || 0;
-        const differenceType = difference > 0 ? "higher" : difference < 0 ? "lower" : "same";
-        const differencePercentage = item.totalPrice > 0 ? (Math.abs(difference) / item.totalPrice) * 100 : 0;
+        const itemDifference = item.difference || 0;
+        const differenceType = itemDifference > 0 ? "higher" : itemDifference < 0 ? "lower" : "same";
+        const differencePercentage = item.totalPrice > 0 ? (Math.abs(itemDifference) / item.totalPrice) * 100 : 0;
         
         return `- ${item.description} (${item.productCode}): ${Math.abs(differencePercentage).toFixed(1)}% ${differenceType} than our standard pricing`;
       }).join('\n')}

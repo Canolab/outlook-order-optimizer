@@ -52,14 +52,15 @@ export interface OrderItem {
   totalPrice: number;
   internalPrice?: number;
   margin?: number;
+  difference?: number; // Added the difference property
 }
 
 export interface PriceComparison {
   orderItems: OrderItem[];
   totalOrderValue: number;
   totalInternalCost: number;
-  totalMargin: number;
-  marginPercentage: number;
+  totalDifference: number; // Changed from totalMargin
+  differencePercentage: number; // Changed from marginPercentage
 }
 
 export interface AIGeneratedResponse {

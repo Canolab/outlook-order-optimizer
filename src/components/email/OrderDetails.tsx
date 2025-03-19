@@ -69,9 +69,9 @@ export const OrderDetailsDisplay: React.FC<OrderDetailsProps> = ({ orderDetails,
                       <td className="text-right p-2">${item.totalPrice.toFixed(2)}</td>
                       {priceComparison && (
                         <td className="text-right p-2">
-                          {item.margin ? (
-                            <span className={item.margin > 0 ? 'text-green-600' : 'text-red-600'}>
-                              ${item.margin.toFixed(2)}
+                          {item.difference !== undefined ? (
+                            <span className={item.difference > 0 ? 'text-green-600' : 'text-red-600'}>
+                              ${item.difference.toFixed(2)}
                             </span>
                           ) : 'N/A'}
                         </td>

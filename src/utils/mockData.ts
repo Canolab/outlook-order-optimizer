@@ -1,4 +1,3 @@
-
 import { Email, EmailCategory, OrderDetails, Attachment } from '@/types/email';
 
 export const generateMockEmails = (count: number = 25): Email[] => {
@@ -146,7 +145,7 @@ export const mockOrderDetails: OrderDetails = {
       unitPrice: 99.99,
       totalPrice: 499.95,
       internalPrice: 85.50,
-      margin: 14.49
+      difference: 14.49
     },
     {
       productCode: "PB-67890",
@@ -155,7 +154,7 @@ export const mockOrderDetails: OrderDetails = {
       unitPrice: 149.99,
       totalPrice: 449.97,
       internalPrice: 120.75,
-      margin: 29.24
+      difference: 29.24
     },
     {
       productCode: "PC-24680",
@@ -164,7 +163,7 @@ export const mockOrderDetails: OrderDetails = {
       unitPrice: 59.99,
       totalPrice: 119.98,
       internalPrice: 45.25,
-      margin: 14.74
+      difference: 14.74
     }
   ],
   totalAmount: 1069.90,
@@ -176,8 +175,8 @@ export const mockPriceComparison = {
   orderItems: mockOrderDetails.items,
   totalOrderValue: 1069.90,
   totalInternalCost: 849.75,
-  totalMargin: 220.15,
-  marginPercentage: 20.58
+  totalDifference: 220.15,
+  differencePercentage: 20.58
 };
 
 export const mockAIResponse = {

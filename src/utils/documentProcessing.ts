@@ -24,12 +24,12 @@ export const comparePricesWithERP = async (orderItems: OrderItem[]): Promise<Ord
       const itemsWithDifference = orderItems.map(item => {
         const internalItem = mockInternalPriceList[item.productCode as keyof typeof mockInternalPriceList];
         const internalPrice = internalItem ? internalItem.internalPrice : item.unitPrice * 0.8; // Fallback
-        const margin = item.unitPrice - internalPrice;
+        const difference = item.unitPrice - internalPrice;
         
         return {
           ...item,
           internalPrice,
-          margin // We keep the property name as margin but we'll display it as "difference"
+          difference // Changed from margin to difference
         };
       });
       
@@ -41,18 +41,18 @@ export const comparePricesWithERP = async (orderItems: OrderItem[]): Promise<Ord
 export const calculateMargin = (orderItems: OrderItem[]): {
   totalOrderValue: number;
   totalInternalCost: number;
-  totalMargin: number;
-  marginPercentage: number;
+  totalDifference: number; // Changed from totalMargin
+  differencePercentage: number; // Changed from marginPercentage
 } => {
   const totalOrderValue = orderItems.reduce((sum, item) => sum + item.totalPrice, 0);
   const totalInternalCost = orderItems.reduce((sum, item) => sum + (item.internalPrice || 0) * item.quantity, 0);
-  const totalMargin = totalOrderValue - totalInternalCost;
-  const marginPercentage = (totalMargin / totalOrderValue) * 100;
+  const totalDifference = totalOrderValue - totalInternalCost; // Changed from totalMargin
+  const differencePercentage = (totalDifference / totalOrderValue) * 100; // Changed from marginPercentage
   
   return {
     totalOrderValue,
     totalInternalCost,
-    totalMargin,
-    marginPercentage
+    totalDifference, // Changed from totalMargin
+    differencePercentage // Changed from marginPercentage
   };
 };
