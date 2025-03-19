@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { Email, Attachment, OrderDetails, AIGeneratedResponse } from '@/types/email';
 import { processPdfWithDocumentAI, comparePricesWithERP, calculateMargin } from '@/utils/documentProcessing';
-import { generateResponseWithAI } from '@/utils/aiUtils';
+import { generateResponseWithAI, generateGenericResponse } from '@/utils/aiUtils';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { MessageSquareText } from 'lucide-react';
 
 // Import refactored components
 import { AttachmentsList } from './email/AttachmentsList';
@@ -26,6 +28,7 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
   const [processingStep, setProcessingStep] = useState<
     'idle' | 'extracting' | 'comparing' | 'generating' | 'complete'
   >('idle');
+  const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
   const { toast } = useToast();
 
   if (!email) {
@@ -99,10 +102,50 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
     }
   };
 
+  const handleGenerateResponse = async () => {
+    if (!email) return;
+    
+    setIsGeneratingResponse(true);
+    
+    try {
+      // Generate response based on email category
+      const response = await generateGenericResponse(email);
+      setAiResponse(response);
+      
+      toast({
+        title: "Response generated",
+        description: "An AI response has been generated for this email",
+      });
+    } catch (error) {
+      console.error('Error generating response:', error);
+      toast({
+        title: "Generation failed",
+        description: "Failed to generate a response for this email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingResponse(false);
+    }
+  };
+
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="max-w-4xl mx-auto">
         <EmailContent email={email} />
+        
+        {/* Add button to generate generic response */}
+        {!aiResponse && email.category !== 'Order' && (
+          <div className="mb-6">
+            <Button 
+              onClick={handleGenerateResponse}
+              disabled={isGeneratingResponse}
+              className="mt-4"
+            >
+              <MessageSquareText className="mr-2 h-4 w-4" />
+              {isGeneratingResponse ? 'Generating...' : 'Generate Response'}
+            </Button>
+          </div>
+        )}
         
         <AttachmentsList 
           attachments={email.attachments || []} 
