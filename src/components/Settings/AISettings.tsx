@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
 export const AISettings = () => {
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState('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');
   const [isSaving, setIsSaving] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [isKeyValid, setIsKeyValid] = useState<boolean | null>(null);
@@ -21,10 +20,9 @@ export const AISettings = () => {
   
   // Load existing API key and settings on component mount
   useEffect(() => {
-    const savedKey = manageApiKey.getApiKey();
-    if (savedKey) {
-      setApiKey(savedKey);
-      setIsKeyValid(true); // Assume saved key is valid
+    // We'll save the pre-filled API key on component mount
+    if (apiKey && !manageApiKey.getApiKey()) {
+      handleSaveApiKey();
     }
     
     // Load other settings if they exist

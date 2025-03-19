@@ -1,13 +1,7 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Layout } from '@/components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { RefreshCw } from 'lucide-react';
+import { AISettings } from '@/components/Settings/AISettings';
 
 const Settings = () => {
   return (
@@ -18,7 +12,7 @@ const Settings = () => {
           <p className="text-muted-foreground">Configure your application preferences</p>
         </div>
         
-        <Tabs defaultValue="connections">
+        <Tabs defaultValue="ai-settings">
           <TabsList className="mb-6">
             <TabsTrigger value="connections">Connections</TabsTrigger>
             <TabsTrigger value="email-processing">Email Processing</TabsTrigger>
@@ -214,88 +208,7 @@ const Settings = () => {
           </TabsContent>
           
           <TabsContent value="ai-settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Configuration</CardTitle>
-                <CardDescription>
-                  Configure the AI response generation settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="font-medium">Response Generation</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label>Enable AI Response Generation</Label>
-                        <p className="text-sm text-muted-foreground">Generate AI-powered responses for emails</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="response-tone">Response Tone</Label>
-                      <select id="response-tone" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                        <option>Professional</option>
-                        <option>Friendly</option>
-                        <option>Technical</option>
-                        <option>Formal</option>
-                      </select>
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="response-length">Response Length</Label>
-                      <select id="response-length" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                        <option>Concise</option>
-                        <option>Standard</option>
-                        <option>Detailed</option>
-                      </select>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label>Include Recommendations</Label>
-                        <p className="text-sm text-muted-foreground">Include sales recommendations with responses</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <h3 className="font-medium">AI Model Configuration</h3>
-                  <div className="space-y-2">
-                    <div className="grid gap-2">
-                      <Label htmlFor="ai-model">AI Model</Label>
-                      <select id="ai-model" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                        <option>Standard</option>
-                        <option>Advanced</option>
-                        <option>Enterprise</option>
-                      </select>
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="api-endpoint">API Endpoint</Label>
-                      <Input 
-                        id="api-endpoint" 
-                        placeholder="Enter your AI API endpoint" 
-                        value="https://api.example.com/v1/generate" 
-                      />
-                    </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="ai-key">API Key</Label>
-                      <Input 
-                        id="ai-key" 
-                        type="password" 
-                        placeholder="Enter your AI API key" 
-                        value="••••••••••••••••••••••••••••••" 
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <AISettings />
           </TabsContent>
           
           <TabsContent value="erp-integration">

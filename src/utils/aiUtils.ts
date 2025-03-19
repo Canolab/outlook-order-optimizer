@@ -12,13 +12,15 @@ const generateResponseWithOpenAI = async (
   } = {}
 ): Promise<string> => {
   try {
-    // In a real implementation, this would use your OpenAI API key from environment variables
+    // Use the API key from localStorage
     const apiKey = localStorage.getItem('openai_api_key');
     
     if (!apiKey) {
       console.error('OpenAI API key not found');
       throw new Error('OpenAI API key not found. Please set your API key in settings.');
     }
+    
+    const model = localStorage.getItem('openai_model') || 'gpt-4o-mini';
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -27,7 +29,7 @@ const generateResponseWithOpenAI = async (
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: options.model || 'gpt-4o-mini',
+        model: options.model || model,
         messages: [
           {
             role: 'system',
