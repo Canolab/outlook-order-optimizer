@@ -6,20 +6,36 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { manageApiKey } from '@/utils/aiUtils';
 import { Loader2, Check, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export const AISettings = () => {
   const [apiKey, setApiKey] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [isKeyValid, setIsKeyValid] = useState<boolean | null>(null);
+  const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
+  const [aiEnabled, setAiEnabled] = useState(true);
   const { toast } = useToast();
   
-  // Load existing API key on component mount
+  // Load existing API key and settings on component mount
   useEffect(() => {
     const savedKey = manageApiKey.getApiKey();
     if (savedKey) {
       setApiKey(savedKey);
       setIsKeyValid(true); // Assume saved key is valid
+    }
+    
+    // Load other settings if they exist
+    const savedModel = localStorage.getItem('openai_model');
+    if (savedModel) {
+      setSelectedModel(savedModel);
+    }
+    
+    const aiEnabledSetting = localStorage.getItem('ai_enabled');
+    if (aiEnabledSetting !== null) {
+      setAiEnabled(aiEnabledSetting === 'true');
     }
   }, []);
   
@@ -43,10 +59,14 @@ export const AISettings = () => {
         setIsSaving(true);
         manageApiKey.saveApiKey(apiKey);
         
+        // Save other settings
+        localStorage.setItem('openai_model', selectedModel);
+        localStorage.setItem('ai_enabled', aiEnabled.toString());
+        
         setIsKeyValid(true);
         toast({
-          title: "API Key Saved",
-          description: "Your OpenAI API key has been saved successfully.",
+          title: "Settings Saved",
+          description: "Your OpenAI API key and settings have been saved successfully.",
         });
       } else {
         setIsKeyValid(false);
@@ -69,17 +89,25 @@ export const AISettings = () => {
       setIsSaving(false);
     }
   };
+
+  const handleModelChange = (value: string) => {
+    setSelectedModel(value);
+  };
+
+  const handleAiEnabledChange = (checked: boolean) => {
+    setAiEnabled(checked);
+  };
   
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Settings</CardTitle>
+        <CardTitle>OpenAI Integration</CardTitle>
         <CardDescription>
-          Configure your AI integration for email categorization and response generation.
+          Configure your OpenAI API integration for email categorization and response generation.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="api-key" className="text-sm font-medium">
               OpenAI API Key
@@ -108,7 +136,7 @@ export const AISettings = () => {
                     Saving
                   </>
                 ) : (
-                  "Save Key"
+                  "Save Settings"
                 )}
               </Button>
             </div>
@@ -134,20 +162,67 @@ export const AISettings = () => {
             </p>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium">Model Selection</h3>
+            <div className="space-y-2">
+              <Label htmlFor="model-selection">OpenAI Model</Label>
+              <Select value={selectedModel} onValueChange={handleModelChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gpt-4o-mini">GPT-4o-mini (Fast & Efficient)</SelectItem>
+                  <SelectItem value="gpt-4o">GPT-4o (Most Powerful)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                GPT-4o-mini is faster and more cost-effective, while GPT-4o offers enhanced capabilities for complex tasks.
+              </p>
+            </div>
+          </div>
+          
+          <div className="space-y-3">
             <h3 className="text-sm font-medium">AI Features</h3>
-            <ul className="text-sm space-y-1">
-              <li>• Email categorization (Order, Inquiry, Support)</li>
-              <li>• Response generation based on email content</li>
-              <li>• Price difference analysis for order emails</li>
-              <li>• Sales recommendations</li>
-            </ul>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="ai-enabled">Enable AI Processing</Label>
+                <p className="text-xs text-muted-foreground">Turn AI-powered features on or off</p>
+              </div>
+              <Switch 
+                id="ai-enabled"
+                checked={aiEnabled}
+                onCheckedChange={handleAiEnabledChange}
+              />
+            </div>
+            
+            <div className="border rounded-md p-4 mt-2 bg-secondary/30">
+              <h4 className="text-sm font-medium mb-2">Available AI Capabilities</h4>
+              <ul className="text-sm space-y-1.5">
+                <li className="flex items-start">
+                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <span>Email categorization (Order, Inquiry, Support, Other)</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <span>Smart response generation based on email content and context</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <span>Price difference analysis for order emails</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
+                  <span>Sales recommendations tailored to customer history</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="bg-secondary/50 text-xs text-muted-foreground">
-        The application uses OpenAI's API to analyze emails and generate appropriate responses. 
-        A valid API key is required for these features to work.
+      <CardFooter className="bg-secondary/50 text-xs text-muted-foreground flex flex-col items-start p-4">
+        <p className="mb-1">This application uses OpenAI's models to analyze emails and generate responses.</p>
+        <p>Requests are processed directly from your browser to OpenAI using your API key.</p>
+        <p className="mt-1">Average usage: ~2,000 tokens per email analysis (~$0.01-0.06 per email depending on model).</p>
       </CardFooter>
     </Card>
   );
