@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Email, Attachment, OrderDetails, AIGeneratedResponse } from '@/types/email';
 import { processPdfWithDocumentAI, comparePricesWithERP, calculateMargin } from '@/utils/documentProcessing';
-import { generateResponseWithAI, generateGenericResponse } from '@/utils/aiUtils';
+import { generateResponseWithAI, generateGenericResponse, manageApiKey } from '@/utils/aiUtils';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { MessageSquareText } from 'lucide-react';
+import { AlertCircle, MessageSquareText } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Import refactored components
 import { AttachmentsList } from './email/AttachmentsList';
@@ -29,7 +30,13 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
     'idle' | 'extracting' | 'comparing' | 'generating' | 'complete'
   >('idle');
   const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const apiKey = manageApiKey.getApiKey();
+    setHasApiKey(!!apiKey);
+  }, []);
 
   if (!email) {
     return (
@@ -44,6 +51,15 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
       toast({
         title: "Cannot process attachment",
         description: "Only PDF attachments can be processed",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!hasApiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your OpenAI API key in Settings to use this feature",
         variant: "destructive",
       });
       return;
@@ -68,9 +84,9 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
         };
         setOrderDetails(updatedOrderDetails);
         
-        // Calculate margins
-        const marginInfo = calculateMargin(itemsWithPrices);
-        setPriceComparison(marginInfo);
+        // Calculate margins - now referred to as "differences"
+        const differenceInfo = calculateMargin(itemsWithPrices);
+        setPriceComparison(differenceInfo);
         
         setProcessingStep('generating');
         
@@ -79,7 +95,7 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
           email.subject,
           email.body,
           updatedOrderDetails,
-          marginInfo
+          differenceInfo
         );
         
         setAiResponse(response);
@@ -104,6 +120,15 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
 
   const handleGenerateResponse = async () => {
     if (!email) return;
+    
+    if (!hasApiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please set your OpenAI API key in Settings to use this feature",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsGeneratingResponse(true);
     
@@ -131,6 +156,15 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="max-w-4xl mx-auto">
+        {!hasApiKey && (
+          <Alert className="mb-6 bg-amber-50 border-amber-300">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              To use AI features, please add your OpenAI API key in Settings.
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <EmailContent email={email} />
         
         {/* Add button to generate generic response */}
@@ -138,7 +172,7 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
           <div className="mb-6">
             <Button 
               onClick={handleGenerateResponse}
-              disabled={isGeneratingResponse}
+              disabled={isGeneratingResponse || !hasApiKey}
               className="mt-4"
             >
               <MessageSquareText className="mr-2 h-4 w-4" />

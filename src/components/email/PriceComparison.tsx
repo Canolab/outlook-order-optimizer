@@ -7,8 +7,8 @@ interface PriceComparisonProps {
   priceComparison: {
     totalOrderValue: number;
     totalInternalCost: number;
-    totalMargin: number;
-    marginPercentage: number;
+    totalDifference: number;
+    differencePercentage: number;
   } | null;
 }
 
@@ -35,14 +35,14 @@ export const PriceComparisonDisplay: React.FC<PriceComparisonProps> = ({ priceCo
           </div>
           <div>
             <p className="font-medium">Price Difference</p>
-            <p className={priceComparison.totalMargin > 0 ? 'text-green-600' : 'text-red-600'}>
-              ${priceComparison.totalMargin.toFixed(2)}
+            <p className={priceComparison.totalDifference > 0 ? 'text-green-600' : 'text-red-600'}>
+              ${priceComparison.totalDifference.toFixed(2)}
             </p>
           </div>
           <div>
             <p className="font-medium">Difference Percentage</p>
-            <p className={priceComparison.marginPercentage > 15 ? 'text-green-600' : 'text-orange-600'}>
-              {priceComparison.marginPercentage.toFixed(2)}%
+            <p className={priceComparison.differencePercentage > 15 ? 'text-green-600' : 'text-orange-600'}>
+              {priceComparison.differencePercentage.toFixed(2)}%
             </p>
           </div>
         </div>
