@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Email, Attachment, OrderDetails, AIGeneratedResponse } from '@/types/email';
 import { processPdfWithDocumentAI, comparePricesWithERP, calculateMargin } from '@/utils/documentProcessing';
@@ -131,11 +130,13 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
     }
     
     setIsGeneratingResponse(true);
+    setProcessingStep('generating');
     
     try {
       // Generate response based on email category
       const response = await generateGenericResponse(email);
       setAiResponse(response);
+      setProcessingStep('complete');
       
       toast({
         title: "Response generated",
@@ -187,7 +188,10 @@ export const EmailDetail: React.FC<EmailDetailProps> = ({ email, onClose }) => {
           onProcessAttachment={handleProcessAttachment}
         />
         
-        <ProcessingStatus processingStep={processingStep} />
+        <ProcessingStatus 
+          processingStep={processingStep} 
+          isOrderEmail={email.category === 'Order'} 
+        />
         
         <OrderDetailsDisplay 
           orderDetails={orderDetails}
