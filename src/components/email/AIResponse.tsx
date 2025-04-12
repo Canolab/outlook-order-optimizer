@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AIGeneratedResponse } from '@/types/email';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { X, Check, Send } from 'lucide-react';
 import { sendEmail } from '@/utils/msGraph';
+import { mockAIResponse } from '@/utils/mockData';
+import { manageApiKey } from '@/utils/aiUtils';
 
 interface AIResponseProps {
   aiResponse: AIGeneratedResponse | null;
@@ -19,11 +21,27 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
   const [editedSubject, setEditedSubject] = useState('');
   const [editedBody, setEditedBody] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+  const [displayResponse, setDisplayResponse] = useState<AIGeneratedResponse | null>(null);
 
-  if (!aiResponse) return null;
+  useEffect(() => {
+    const apiKey = manageApiKey.getApiKey();
+    setHasApiKey(!!apiKey);
+    
+    // Use the provided aiResponse if available, otherwise use the mock response when no API key is present
+    if (aiResponse) {
+      setDisplayResponse(aiResponse);
+    } else if (!aiResponse && !hasApiKey) {
+      setDisplayResponse(mockAIResponse);
+    } else {
+      setDisplayResponse(null);
+    }
+  }, [aiResponse, hasApiKey]);
+
+  if (!displayResponse) return null;
   
   const handleCopyResponse = () => {
-    navigator.clipboard.writeText(aiResponse.body);
+    navigator.clipboard.writeText(displayResponse.body);
     toast({
       title: "Copied to clipboard",
       description: "The response has been copied to your clipboard",
@@ -31,8 +49,8 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
   };
 
   const handleStartEditing = () => {
-    setEditedSubject(aiResponse.subject);
-    setEditedBody(aiResponse.body);
+    setEditedSubject(displayResponse.subject);
+    setEditedBody(displayResponse.body);
     setIsEditing(true);
   };
 
@@ -57,8 +75,8 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
     
     try {
       // Get the current subject and body (either edited or original)
-      const subject = isEditing ? editedSubject : aiResponse.subject;
-      const body = isEditing ? editedBody : aiResponse.body;
+      const subject = isEditing ? editedSubject : displayResponse.subject;
+      const body = isEditing ? editedBody : displayResponse.body;
       
       // Send email using our msGraph utility
       const success = await sendEmail(
@@ -121,19 +139,19 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
           <>
             <div>
               <p className="font-medium text-sm">Subject</p>
-              <p>{aiResponse.subject}</p>
+              <p>{displayResponse.subject}</p>
             </div>
             <div>
               <p className="font-medium text-sm">Message</p>
               <div className="bg-secondary p-3 rounded-md whitespace-pre-line text-sm">
-                {aiResponse.body}
+                {displayResponse.body}
               </div>
             </div>
-            {aiResponse.recommendation && (
+            {displayResponse.recommendation && (
               <div>
                 <p className="font-medium text-sm">Sales Recommendation</p>
                 <div className="bg-brand-50 border-l-4 border-brand-500 p-3 rounded-md text-sm">
-                  {aiResponse.recommendation}
+                  {displayResponse.recommendation}
                 </div>
               </div>
             )}
