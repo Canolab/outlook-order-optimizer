@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { X, Check, Send } from 'lucide-react';
+import { X, Check, Send, Copy, Edit } from 'lucide-react';
 import { sendEmail } from '@/utils/msGraph';
 import { mockAIResponse } from '@/utils/mockData';
 import { manageApiKey } from '@/utils/aiUtils';
@@ -138,19 +138,19 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
         ) : (
           <>
             <div>
-              <p className="font-medium text-sm">Subject</p>
-              <p>{displayResponse.subject}</p>
+              <p className="font-medium text-sm mb-1">Subject</p>
+              <p className="px-3 py-2 rounded-md bg-secondary text-sm">{displayResponse.subject}</p>
             </div>
             <div>
-              <p className="font-medium text-sm">Message</p>
-              <div className="bg-secondary p-3 rounded-md whitespace-pre-line text-sm">
+              <p className="font-medium text-sm mb-1">Message</p>
+              <div className="bg-secondary p-4 rounded-md whitespace-pre-wrap text-sm leading-relaxed">
                 {displayResponse.body}
               </div>
             </div>
             {displayResponse.recommendation && (
               <div>
-                <p className="font-medium text-sm">Sales Recommendation</p>
-                <div className="bg-brand-50 border-l-4 border-brand-500 p-3 rounded-md text-sm">
+                <p className="font-medium text-sm mb-1">Sales Recommendation</p>
+                <div className="bg-brand-50 border-l-4 border-brand-500 p-4 rounded-md text-sm leading-relaxed">
                   {displayResponse.recommendation}
                 </div>
               </div>
@@ -160,7 +160,7 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
       </CardContent>
       <CardFooter>
         {isEditing ? (
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 w-full">
             <Button onClick={handleSaveEdits} variant="default">
               <Check className="mr-1 h-4 w-4" />
               Save
@@ -169,21 +169,31 @@ export const AIResponseDisplay: React.FC<AIResponseProps> = ({ aiResponse }) => 
               <X className="mr-1 h-4 w-4" />
               Cancel
             </Button>
-            <Button onClick={handleSendEmail} disabled={isSending} className="bg-green-600 hover:bg-green-700 ml-auto">
+            <Button 
+              onClick={handleSendEmail} 
+              disabled={isSending} 
+              className="bg-green-600 hover:bg-green-700 ml-auto"
+            >
               <Send className="mr-2 h-4 w-4" />
               {isSending ? 'Sending...' : 'Send Email'}
             </Button>
           </div>
         ) : (
-          <div className="flex space-x-2">
-            <Button onClick={handleSendEmail} disabled={isSending} className="bg-green-600 hover:bg-green-700">
+          <div className="flex space-x-2 w-full flex-wrap md:flex-nowrap">
+            <Button 
+              onClick={handleSendEmail} 
+              disabled={isSending} 
+              className="bg-green-600 hover:bg-green-700"
+            >
               <Send className="mr-2 h-4 w-4" />
               {isSending ? 'Sending...' : 'Send Email'}
             </Button>
-            <Button onClick={handleCopyResponse}>
+            <Button onClick={handleCopyResponse} variant="outline">
+              <Copy className="mr-2 h-4 w-4" />
               Copy Response
             </Button>
             <Button variant="outline" onClick={handleStartEditing}>
+              <Edit className="mr-2 h-4 w-4" />
               Edit Response
             </Button>
           </div>

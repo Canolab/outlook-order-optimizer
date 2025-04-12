@@ -22,7 +22,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
         <CardTitle className="text-sm font-medium">Processing Status</CardTitle>
       </CardHeader>
       <CardContent className="pb-2">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center">
             <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
             <span className="text-sm">Document received</span>
